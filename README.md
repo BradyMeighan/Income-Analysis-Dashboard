@@ -160,6 +160,6 @@ This project is licensed under the MIT License.
 
 - Email: meighanba@vcu.edu
 - GitHub: [@BradyMeighan](https://github.com/BradyMeighan)
-- LinkedIn: [Brady Meighan](https://www.linkedin.com/in/BradyMeighan)
+- LinkedIn: [Brady Meighan](https://www.linkedin.com/in/brady-meighan)
 
 Happy Analyzing! 📈🔍
