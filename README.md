@@ -162,4 +162,10 @@ This project is licensed under the MIT License.
 - GitHub: [@BradyMeighan](https://github.com/BradyMeighan)
 - LinkedIn: [Brady Meighan](https://www.linkedin.com/in/brady-meighan)
 
+## 👥 Team (Group 9)
+
+- Margarita Damalas - [damalasma@vcu.edu](mailto:damalasma@vcu.edu)
+- Hunter Hall - [hallhj@vcu.edu](mailto:hallhj@vcu.edu)
+- Susan Grube - [grubes@vcu.edu](mailto:grubes@vcu.edu)
+
 Happy Analyzing! 📈🔍
