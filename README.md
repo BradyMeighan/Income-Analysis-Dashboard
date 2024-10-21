@@ -97,25 +97,19 @@ To help you test the dashboard without real data, we've provided a script (`fake
 1. **Ensure Required Files Are Present**:
    Make sure `adult.xlsx` and `salary_datafields.xlsx` are in your project directory.
 
-2. **Navigate to the Project Directory**:
-   Open a command prompt or terminal and change to your project directory:
-   ```bash
-   cd path/to/income-analysis-dashboard
-   ```
-
-3. **Run the Fake Data Generation Script**:
+2. **Run the Fake Data Generation Script**:
    Execute the following command:
    ```bash
    python fakedata.py
    ```
 
-4. **Specify the Number of Entries**:
+3. **Specify the Number of Entries**:
    When prompted, enter the number of fake data entries you want to generate.
 
-5. **Locate the Generated File**:
+4. **Locate the Generated File**:
    After running the script, a new file named `fake_data.csv` will be created in your project directory. This file contains the synthetic data you can use to test the dashboard.
 
-6. **Review the Output**:
+5. **Review the Output**:
    The script will display the first 10 rows of the generated data and the total number of entries created.
 
 ### Using the Fake Data:
