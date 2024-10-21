@@ -143,7 +143,7 @@ def register_import_data_callbacks(app):
     
             # Prepare prediction output message
             prediction_output = dbc.Alert(
-                f"Predictions completed successfully using the {model_name} model.",
+                f"Predictions completed successfully using the {model_name} model. (Preview includes first 10 rows, export data for full analysis)",
                 color="success",
                 style={'font-size': '20px'}
             )
