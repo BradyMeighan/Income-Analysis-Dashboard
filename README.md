@@ -124,30 +124,6 @@ You can now use the `fake_data.csv` file in the "Import Data" tab of your dashbo
 
 Note: While this fake data mimics the distributions and ranges of the original dataset, it is still synthetic and should be used for testing purposes only. It may not capture complex relationships or nuances present in real-world data.
 
-## 📊 Usage
-
-1. **Data Input**: Upload your data or generate fake data using `fakedata.py`
-2. **Predictions**: Enter features or upload a dataset for batch predictions
-3. **Analysis**: Explore visualizations and fairness metrics
-4. **Export**: Download prediction results and analysis reports
-
-## 📁 Project Structure
-
-```
-income-analysis-dashboard/
-├── app.py
-├── fakedata.py
-├── requirements.txt
-├── assets/
-├── callbacks/
-├── data/
-├── fairness/
-├── layout/
-├── models/
-├── tests/
-└── utils/
-```
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please fork the repository and create a pull request with your features or fixes.
