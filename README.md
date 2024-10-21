@@ -86,8 +86,8 @@ This project is licensed under the MIT License.
 
 ## 📞 Contact
 
-- Email: your.email@example.com
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Name](https://www.linkedin.com/in/yourname)
+- Email: meighanba@vcu.edu
+- GitHub: [@BradyMeighan](https://github.com/BradyMeighan)
+- LinkedIn: [Brady Meighan](https://www.linkedin.com/in/BradyMeighan)
 
 Happy Analyzing! 📈🔍
