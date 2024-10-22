@@ -25,7 +25,7 @@ The Income Analysis Dashboard is a powerful, interactive web application built w
 2. Create and activate a virtual environment (optional but recommended):
    ```bash
    python -m venv venv
-   source venv\Scripts\activate  # On Linux, use `venv/bin/activate`
+   venv\Scripts\activate  # On Linux, use `source venv/bin/activate`
    ```
 
 3. Install dependencies:
