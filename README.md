@@ -18,14 +18,14 @@ The Income Analysis Dashboard is a powerful, interactive web application built w
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/income-analysis-dashboard.git
+   git clone https://github.com/BradyMeighan/income-analysis-dashboard.git
    cd income-analysis-dashboard
    ```
 
 2. Create and activate a virtual environment (optional but recommended):
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   source venv\Scripts\activate  # On Linux, use `venv/bin/activate`
    ```
 
 3. Install dependencies:
