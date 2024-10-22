@@ -1,4 +1,4 @@
-# Income Analysis Dashboard
+![Logo](logo.png)
 
 ## Overview
 
