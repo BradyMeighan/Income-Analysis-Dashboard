@@ -94,7 +94,7 @@ def perform_fairness_analysis(store_data):
     return store_data
 
 store_data = perform_fairness_analysis(store_data)
-
+logger.critical("Dash is running on http://127.0.0.1:8050/.")
 # -----------------------------------------------------------------------------
 # Set the Layout with Store Data
 # -----------------------------------------------------------------------------
