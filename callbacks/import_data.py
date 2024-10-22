@@ -1,7 +1,10 @@
+# callbacks/import_data.py
+
 # =============================================================================
 # Import Data Callback
 # =============================================================================
 
+import dash
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import html, dcc
@@ -11,11 +14,13 @@ import io
 from data.preprocessing import preprocess_data
 import json
 import logging
-from models.training import train_models
+import plotly.express as px
+from plotly.subplots import make_subplots
+import numpy as np
 
 logger = logging.getLogger()
 
-def register_import_data_callbacks(app):
+def register_import_data_callbacks(app, trained_models):
     @app.callback(
         [Output('import-prediction-output', 'children'),
          Output('prediction-results', 'children'),
@@ -32,6 +37,20 @@ def register_import_data_callbacks(app):
     )
     def handle_import_interaction(n_clicks, active_tab, contents, filename, model_name, store_data, uploaded_data_store):
         ctx = dash.callback_context
+
+        # Retrieve necessary variables from store_data
+        numerical_columns = store_data.get('numerical_columns', [])
+        additional_numerical_features = store_data.get('additional_numerical_features', [])
+        numerical_means = store_data.get('numerical_means', {})
+        numerical_stds = store_data.get('numerical_stds', {})
+        feature_cols = store_data.get('feature_cols', [])
+
+        # Use trained_models passed as argument
+        model = trained_models.get(model_name, None)
+        if model is None:
+            error_message = "Selected model is not available."
+            logger.error(error_message)
+            return dbc.Alert(error_message, color="danger"), dash.dash.no_update, dash.dash.no_update, dash.dash.no_update
     
         if not ctx.triggered:
             raise dash.exceptions.PreventUpdate
@@ -40,7 +59,7 @@ def register_import_data_callbacks(app):
     
         if trigger_id == 'run-predictions':
             if contents is None:
-                return dbc.Alert("No file uploaded yet.", color="warning"), no_update, no_update, no_update
+                return dbc.Alert("No file uploaded yet.", color="warning"), dash.no_update, dash.no_update, dash.no_update
     
             # Decode the uploaded file
             content_type, content_string = contents.split(',')
@@ -52,7 +71,7 @@ def register_import_data_callbacks(app):
             except Exception as e:
                 error_message = f"Failed to parse CSV file: {e}"
                 logger.error(error_message)
-                return dbc.Alert(error_message, color="danger"), no_update, no_update, no_update
+                return dbc.Alert(error_message, color="danger"), dash.no_update, dash.no_update, dash.no_update
     
             # Check if required columns are present
             required_columns = ['workclass', 'education', 'marital-status', 'occupation',
@@ -62,7 +81,7 @@ def register_import_data_callbacks(app):
             if missing_columns:
                 error_message = f"The following required columns are missing in the uploaded file: {', '.join(missing_columns)}."
                 logger.error(error_message)
-                return dbc.Alert(error_message, color="danger"), no_update, no_update, no_update
+                return dbc.Alert(error_message, color="danger"), dash.no_update, dash.no_update, dash.no_update
     
             # Retrieve numerical_means and numerical_stds from store_data
             numerical_means = store_data.get('numerical_means', {})
@@ -71,7 +90,7 @@ def register_import_data_callbacks(app):
             if not numerical_means or not numerical_stds:
                 error_message = "Numerical means and standard deviations are missing from stored data."
                 logger.error(error_message)
-                return dbc.Alert(error_message, color="danger"), no_update, no_update, no_update
+                return dbc.Alert(error_message, color="danger"), dash.no_update, dash.no_update, dash.no_update
     
             # Preprocess the uploaded data for prediction
             try:
@@ -81,7 +100,7 @@ def register_import_data_callbacks(app):
             except Exception as e:
                 error_message = f"An error occurred during preprocessing: {str(e)}"
                 logger.error(error_message)
-                return dbc.Alert(error_message, color="danger"), no_update, no_update, no_update
+                return dbc.Alert(error_message, color="danger"), dash.no_update, dash.no_update, dash.no_update
     
             # Prepare features for prediction
             X_input = preprocessed_uploaded_data.drop(columns=['income_numeric'], errors='ignore')
@@ -95,12 +114,12 @@ def register_import_data_callbacks(app):
             logger.info("Reindexed input data to match training dummy variables.")
     
             # Retrieve the selected model
-            trained_models = {model: eval(model) for model in store_data.get('trained_models', {})}
+            #trained_models = {model: eval(model) for model in store_data.get('trained_models', {})}
             model = trained_models.get(model_name, None)
             if model is None:
                 error_message = "Selected model is not available."
                 logger.error(error_message)
-                return dbc.Alert(error_message, color="danger"), no_update, no_update, no_update
+                return dbc.Alert(error_message, color="danger"), dash.no_update, dash.no_update, dash.no_update
     
             # Make predictions
             try:
@@ -112,7 +131,7 @@ def register_import_data_callbacks(app):
             except Exception as e:
                 error_message = f"An error occurred during prediction: {e}"
                 logger.error(error_message)
-                return dbc.Alert(error_message, color="danger"), no_update, no_update, no_update
+                return dbc.Alert(error_message, color="danger"), dash.no_update, dash.no_update, dash.no_update
     
             # Map predictions to income categories
             income_map = {0: '<=50K', 1: '>50K'}
@@ -153,12 +172,12 @@ def register_import_data_callbacks(app):
     
         elif trigger_id == 'import-visual-tabs':
             if uploaded_data_store is None:
-                return no_update, no_update, dbc.Alert("No predictions to visualize. Please upload a file and run predictions.", color="warning"), no_update
+                return dash.no_update, dash.no_update, dbc.Alert("No predictions to visualize. Please upload a file and run predictions.", color="warning"), dash.no_update
     
             preprocessed_uploaded_data = pd.read_json(uploaded_data_store, orient='split')
             visual_content = generate_import_visualization(active_tab, preprocessed_uploaded_data)
     
-            return no_update, no_update, visual_content, no_update
+            return dash.no_update, dash.no_update, visual_content, dash.no_update
     
         else:
             raise dash.exceptions.PreventUpdate

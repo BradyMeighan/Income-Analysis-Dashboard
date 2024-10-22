@@ -16,188 +16,179 @@ import logging
 
 logger = logging.getLogger()
 
-def register_render_content_callbacks(app):
+def register_render_content_callbacks(app, trained_models):
     @app.callback(
         Output('tabs-content', 'children'),
         Input('tabs', 'active_tab'),
         State('stored-data', 'data')
     )
     def render_content(tab, store_data):
-        global numerical_columns, additional_numerical_features, feature_cols, trained_models, preprocessed_data
+        # Retrieve necessary variables from store_data
+        numerical_columns = store_data.get('numerical_columns', [])
+        additional_numerical_features = store_data.get('additional_numerical_features', [])
+        categorical_columns = store_data.get('categorical_columns', [])
+        numerical_means = store_data.get('numerical_means', {})
+        numerical_stds = store_data.get('numerical_stds', {})
+        feature_cols = store_data.get('feature_cols', [])
+        trained_models_names = store_data.get('trained_models_names', {})
+        model_performance_json = store_data.get('model_performance_json', '{}')
+        fairness_metrics_json = store_data.get('fairness_metrics_json', '{}')
+        data_json = store_data.get('data', None)
+        metrics = store_data.get('metrics', {})
+
         if tab == 'findings-tab':
-            # Retrieve preprocessed data
-            data_json = store_data.get('data', None)
-            if data_json is None:
-                return dbc.Container([
-                    dbc.Row([
-                        dbc.Col([
-                            dbc.Alert("Data not found. Please ensure preprocessing is completed.", color="danger")
-                        ], width=12)
-                    ])
-                ])
-    
-            # Load data from JSON
-            data = pd.read_json(data_json, orient='split')
-    
-            # Sprint Goal Description
-            sprint_goal = """
-    ### **Sprint Goal**
-    
-    For Sprint 2, our goal was to develop and evaluate machine learning models for our Income Prediction System. We aimed to create a baseline logistic regression model, compare it with other model types, and perform initial fairness checks across demographic groups. This sets the stage for fine-tuning and user interface development in the next sprint.
-            """
-    
-            # Sprint Backlog Items
-            sprint_backlog = [
-                "- **Baseline Model Development:** Successfully trained a logistic regression model as a baseline for income prediction.",
-                "- **Model Comparison:** Implemented and compared multiple models (logistic regression, decision trees, random forest, XGBoost) to find the best-performing model.",
-                "- **Fairness Analysis:** Conducted initial fairness checks across different demographic groups to identify and address potential biases in the model predictions."
+            # Sprint 1 Content
+            sprint1_goal = """
+        ### **Sprint 1 Goal**
+
+        Our primary objective for **Sprint 1** was to lay the foundation for the Income Prediction System by focusing on data preprocessing and exploratory data analysis (EDA). We aimed to ensure data integrity, handle missing values, and perform initial visualizations to understand the dataset's structure and key characteristics.
+        """
+
+            sprint1_backlog = [
+                "- **Data Collection and Loading:** Successfully loaded the `adult.xlsx` dataset for analysis.",
+                "- **Data Cleaning:** Handled missing values, duplicates, and outliers to prepare the data for modeling.",
+                "- **Exploratory Data Analysis:** Performed initial visualizations and statistical summaries to understand data distributions.",
+                "- **Documentation and QA:** Established initial documentation and quality assurance processes.",
             ]
-    
-            # Model Performance Summary
-            model_performance_summary = """
-    ## **Machine Learning Models**
-    
-    In Sprint 2, we developed and evaluated multiple machine learning models to predict income levels. The models trained include:
-    
-    - **Logistic Regression:** A baseline model for binary classification.
-    - **Decision Tree Classifier:** Captures non-linear relationships.
-    - **Random Forest Classifier:** An ensemble method that improves prediction accuracy and controls overfitting.
-    - **XGBoost Classifier:** An advanced ensemble method that often provides superior performance through gradient boosting.
-    
-    Below is a comparison of their performance metrics:
-    
-    | Model               | Accuracy | Precision | Recall | F1-Score |
-    |---------------------|----------|-----------|--------|----------|
-    | Logistic Regression | 0.8585   | 0.7478    | 0.6209 | 0.6785   |
-    | Decision Tree       | 0.8257   | 0.6432    | 0.6177 | 0.6302   |
-    | Random Forest       | 0.8537   | 0.7273    | 0.6261 | 0.6730   |
-    | XGBoost             | 0.8749   | 0.7817    | 0.6658 | 0.7191   |
-    
-    **Interpretation:**
-    
-    - **XGBoost** performed the best overall, with the highest accuracy, precision, recall, and F1-score.
-    - **Logistic Regression**, our baseline model, showed surprisingly good performance, especially in terms of precision.
-    - **Random Forest** came in third, with balanced performance across all metrics.
-    - **Decision Tree** had the lowest performance, which is not unusual as it's prone to overfitting compared to ensemble methods.
-    
-    The superior performance of XGBoost can be attributed to its ability to handle complex relationships in the data and its built-in regularization properties.
-            """
-    
-            # Fairness Analysis Summary
-            fairness_analysis_summary = """
-    ## **Fairness Analysis**
-    
-    **What is Fairness Analysis?**
-    Fairness analysis checks if our models treat different groups of people equally. For example, we want to ensure that the model doesn't favor one race or gender over another when predicting income levels.
-    
-    **Why is it Important?**
-    Ensuring fairness is crucial to avoid biased decisions that could negatively impact certain groups. It helps in building trustworthy and ethical AI systems.
-    
-    **How Does it Affect the Models?**
-    If a model is unfair, it might perform well overall but perform poorly for specific groups. Identifying and addressing these biases ensures that the model is reliable and equitable for everyone.
-    
-    **Observations:**
-    
-    - **Logistic Regression**: Has the most variation in both True Positive Rate and Equal Opportunity Difference across groups.
-    - **Decision Tree**: More consistent True Positive Rate, but some variation in Equal Opportunity Difference.
-    - **Random Forest**: Very consistent True Positive Rate, minimal variation in Equal Opportunity Difference.
-    - **XGBoost**: Some variation in both metrics, but less extreme than Logistic Regression.
-    
-    The **Random Forest** model appears to be the best choice for fairness because:
-    - It has the most consistent True Positive Rate across all demographic groups.
-    - Its Equal Opportunity Difference is very close to zero for most groups.
-    
-    This suggests the Random Forest model is the most fair and consistent across different demographic groups, making it likely the best option for reducing bias in decision-making.
-    
-    **Note:** While XGBoost performed best in terms of overall accuracy, the Random Forest model showed superior fairness characteristics. This highlights the importance of considering both performance and fairness in model selection.
-            """
-    
-            # Key Findings Section
-            key_findings_section = """
-    ### **Key Findings**
-    
-    1. **Model Performance:** XGBoost outperformed other models in terms of overall accuracy (87.49%) and F1-score (0.7191), showing its effectiveness in predicting income levels.
-    2. **Fairness Considerations:** The Random Forest model demonstrated the most consistent performance across different demographic groups, indicating better fairness characteristics.
-    3. **Trade-off between Performance and Fairness:** While XGBoost showed the best overall performance, Random Forest exhibited better fairness. This highlights the need to balance model accuracy with fairness in real-world applications.
-    4. **Baseline Model Effectiveness:** The Logistic Regression model, despite its simplicity, showed competitive performance (85.85% accuracy), especially in terms of precision (0.7478).
-    5. **Demographic Disparities:** Our analysis revealed varying levels of model performance across different demographic groups, emphasizing the importance of ongoing fairness assessments and potential bias mitigation strategies.
-    6. **Decision Tree Limitations:** The Decision Tree model had the lowest performance (82.57% accuracy), which is not unusual as it's prone to overfitting compared to ensemble methods.
-    7. **XGBoost Superiority:** XGBoost's superior performance can be attributed to its ability to handle complex relationships in the data and its built-in regularization properties.
-            """
-    
+
+            # Sprint 2 Content
+            sprint2_goal = """
+        ### **Sprint 2 Goal**
+
+        In **Sprint 2**, our goal was to develop and evaluate machine learning models for our Income Prediction System. We aimed to create a baseline logistic regression model, compare it with other model types, and perform initial fairness checks across demographic groups. This set the stage for fine-tuning and user interface development in the next sprint.
+        """
+
+            sprint2_backlog = [
+                "- **Baseline Model Development:** Trained a logistic regression model as a baseline for income prediction.",
+                "- **Model Comparison:** Implemented and compared multiple models (logistic regression, decision tree, random forest, XGBoost) to find the best-performing model.",
+                "- **Fairness Analysis:** Conducted initial fairness checks across different demographic groups to identify and address potential biases in the model predictions.",
+            ]
+
+            # Sprint 3 Content
+            sprint3_goal = """
+        ### **Sprint 3 Goal**
+
+        The focus of **Sprint 3** was to enhance the user interface and experience of the Income Prediction System. We aimed to integrate the models into a user-friendly dashboard, allowing users to input data, view predictions, and analyze results through interactive visualizations.
+        """
+
+            sprint3_backlog = [
+                "- **Dashboard Development:** Built an interactive dashboard using Dash and Plotly.",
+                "- **Model Integration:** Integrated the trained models into the dashboard for real-time predictions.",
+                "- **User Input Forms:** Developed forms for users to input data and receive income predictions.",
+                "- **Interactive Visualizations:** Added charts and graphs to visualize data distributions and model results.",
+                "- **Export Functionality:** Enabled users to export prediction results for further analysis.",
+            ]
+
+            # Overall Findings and Conclusions
+            overall_findings = """
+        ## **Overall Findings and Conclusions**
+
+        Throughout **Sprints 1 to 3**, the Income Prediction System evolved from data preprocessing to a fully functional interactive dashboard. Key accomplishments and insights include:
+
+        - **Data Preprocessing:** Ensured data quality by handling missing values, duplicates, and outliers. This foundational work was critical for building reliable models.
+        - **Model Performance:** The XGBoost model consistently outperformed others in terms of accuracy and F1-score, indicating its effectiveness for this classification task.
+        - **Fairness Considerations:** Fairness analysis revealed that while the XGBoost model performed best overall, the Random Forest model demonstrated more consistent performance across different demographic groups. This highlights the trade-off between model accuracy and fairness.
+        - **User Interface Development:** The dashboard provides an accessible platform for users to interact with the models, input data, and visualize results, enhancing the system's usability.
+        - **Challenges Overcome:** Addressed challenges related to data imbalance, model bias, and integrating complex models into a web application.
+        """
+
+            # Retrospective and Next Steps
+            retrospective = """
+        ## **Retrospective and Next Steps**
+
+        - **Strengths:**
+          - Effective collaboration and communication among team members.
+          - Successful implementation of machine learning models with robust performance.
+          - Development of an intuitive user interface that meets user needs.
+
+        - **Areas for Improvement:**
+          - Enhance model fairness without significantly compromising accuracy.
+          - Implement more advanced techniques for bias mitigation.
+          - Conduct user testing to gather feedback for further UI/UX improvements.
+
+        - **Future Work:**
+          - Explore additional models and techniques to improve both performance and fairness.
+          - Incorporate more features or external data sources to enrich the model.
+          - Implement continuous integration and deployment for streamlined updates and maintenance.
+        """
+
+            # Assemble the content into the layout
             return dbc.Container([
-                # Sprint Goal Section
+                # Sprint 1 Section
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
+                            dbc.CardHeader(html.H4("Sprint 1: Data Preprocessing & EDA")),
                             dbc.CardBody([
-                                html.H4("Sprint Goal", className="card-title"),
-                                dcc.Markdown(sprint_goal, style={'font-size': '18px'})
+                                dcc.Markdown(sprint1_goal, style={'font-size': '18px'}),
+                                dcc.Markdown('\n'.join(sprint1_backlog), style={'font-size': '18px'}),
                             ])
                         ], className="mb-4")
                     ], width=12)
                 ]),
-    
-                # Sprint Backlog Section
+
+                # Sprint 2 Section
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
-                            dbc.CardHeader(html.H4("Sprint Backlog")),
+                            dbc.CardHeader(html.H4("Sprint 2: Model Development & Fairness Analysis")),
                             dbc.CardBody([
-                                dcc.Markdown('\n'.join(sprint_backlog), style={'font-size': '18px'})
-                            ])
-                        ], className="mb-4")
-                    ], width=10)
-                ], justify='center'),
-    
-                # Model Performance Summary
-                dbc.Row([
-                    dbc.Col([
-                        dbc.Card([
-                            dbc.CardHeader(html.H4("Model Performance Summary")),
-                            dbc.CardBody([
-                                dcc.Markdown(model_performance_summary, style={'font-size': '18px'})
+                                dcc.Markdown(sprint2_goal, style={'font-size': '18px'}),
+                                dcc.Markdown('\n'.join(sprint2_backlog), style={'font-size': '18px'}),
                             ])
                         ], className="mb-4")
                     ], width=12)
                 ]),
-    
-                # Fairness Analysis Summary
+
+                # Sprint 3 Section
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
-                            dbc.CardHeader(html.H4("Fairness Analysis Summary")),
+                            dbc.CardHeader(html.H4("Sprint 3: Dashboard Implementation & User Experience")),
                             dbc.CardBody([
-                                dcc.Markdown(fairness_analysis_summary, style={'font-size': '18px'})
+                                dcc.Markdown(sprint3_goal, style={'font-size': '18px'}),
+                                dcc.Markdown('\n'.join(sprint3_backlog), style={'font-size': '18px'}),
                             ])
                         ], className="mb-4")
                     ], width=12)
                 ]),
-    
-                # Key Findings Section
+
+                # Overall Findings Section
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
-                            dbc.CardHeader(html.H4("Key Findings")),
+                            dbc.CardHeader(html.H4("Overall Findings and Conclusions")),
                             dbc.CardBody([
-                                dcc.Markdown(key_findings_section, style={'font-size': '18px'})
+                                dcc.Markdown(overall_findings, style={'font-size': '18px'}),
                             ])
                         ], className="mb-4")
                     ], width=12)
                 ]),
-    
-                # Retrospective Image Section
+
+                # Retrospective Section
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardHeader(html.H4("Retrospective and Next Steps")),
+                            dbc.CardBody([
+                                dcc.Markdown(retrospective, style={'font-size': '18px'}),
+                            ])
+                        ], className="mb-4")
+                    ], width=12)
+                ]),
+
+                # Retrospective Image (Optional)
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.Img(src="/assets/retrospective.png", style={'width': '100%', 'margin-top': '20px'})
+                                html.Img(src="/assets/retrospective.png", style={'width': '100%', 'margin-top': '20px'}),
                             ])
                         ], className="mb-4")
                     ], width=12)
                 ])
             ], fluid=True)
-    
+
         elif tab == 'preprocessing-tab':
             # Retrieve preprocessing metrics
             metrics = store_data.get('metrics', {})
@@ -286,7 +277,8 @@ def register_render_content_callbacks(app):
             ], fluid=True)
     
         elif tab == 'visualizations-tab':
-            if raw_data is None:
+            raw_data_json = store_data.get('raw_data', None)
+            if raw_data_json is None:
                 return dbc.Container([
                     dbc.Row([
                         dbc.Col([
@@ -294,7 +286,8 @@ def register_render_content_callbacks(app):
                         ], width=12)
                     ])
                 ])
-            
+            raw_data = pd.read_json(raw_data_json, orient='split')
+
             data_json = store_data.get('data', None)
             if data_json is None:
                 return dbc.Container([
@@ -1000,3 +993,39 @@ def register_render_content_callbacks(app):
                 html.Hr(),
                 html.P(f"The pathname {tab} was not recognized."),
             ])
+            
+    @app.callback(
+        Output('categorical-graph', 'figure'),
+        Input('categorical-dropdown', 'value'),
+        State('stored-data', 'data')
+    )
+    def update_categorical_graph(selected_categorical, store_data):
+        data_json = store_data.get('data', None)
+        if data_json is None:
+            return {}  # Return an empty figure or some default figure
+        data = pd.read_json(data_json, orient='split')
+
+        fig = px.histogram(
+            data,
+            x=selected_categorical,
+            color='income',
+            barmode='group',
+            title=f"Distribution of Income Levels by {selected_categorical.replace('-', ' ').title()}",
+            labels={selected_categorical: selected_categorical.replace('-', ' ').title(), 'count': 'Count'},
+            color_discrete_map={'<=50K':'#636EFA', '>50K':'#EF553B'}
+        )
+        return fig
+
+
+    @app.callback(
+    Output('download-results', 'data'),
+    Input('export-results-button', 'n_clicks'),
+    State('uploaded-data-store', 'data'),
+    prevent_initial_call=True
+    )
+    def export_results(n_clicks, uploaded_data_store):
+        if uploaded_data_store is None:
+            return None  # No data to export
+        data = pd.read_json(uploaded_data_store, orient='split')
+        return dcc.send_data_frame(data.to_csv, "prediction_results.csv", index=False)
+

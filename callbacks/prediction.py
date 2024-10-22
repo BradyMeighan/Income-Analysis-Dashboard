@@ -1,3 +1,5 @@
+# callbacks/prediction.py
+
 # =============================================================================
 # Prediction Callback
 # =============================================================================
@@ -5,14 +7,16 @@
 from dash.dependencies import Input, Output, State, ALL
 import dash_bootstrap_components as dbc
 from dash import html
+import dash
 import pandas as pd
 from data.preprocessing import preprocess_data
 import json
 import logging
+import numpy as np
 
 logger = logging.getLogger()
 
-def register_prediction_callbacks(app):
+def register_prediction_callbacks(app, trained_models):
     @app.callback(
         [Output('prediction-output', 'children'),
          Output('prediction-history', 'data')],
@@ -25,6 +29,19 @@ def register_prediction_callbacks(app):
         prevent_initial_call=True
     )
     def handle_prediction_and_history(n_clicks, model_name, input_values, input_ids, store_data, prediction_history):
+        # Retrieve necessary variables from store_data
+        numerical_columns = store_data.get('numerical_columns', [])
+        additional_numerical_features = store_data.get('additional_numerical_features', [])
+        numerical_means = store_data.get('numerical_means', {})
+        numerical_stds = store_data.get('numerical_stds', {})
+        feature_cols = store_data.get('feature_cols', [])
+
+        # Use trained_models passed as argument
+        model = trained_models.get(model_name, None)
+        if model is None:
+            error_message = "Selected model is not available."
+            logger.error(error_message)
+            return dbc.Alert(error_message, color="danger"), prediction_history
         if n_clicks is None:
             raise dash.exceptions.PreventUpdate
     
@@ -61,7 +78,7 @@ def register_prediction_callbacks(app):
         logger.info("Reindexed input data to match training dummy variables.")
     
         # Retrieve the selected model
-        trained_models = {model: eval(model) for model in store_data.get('trained_models', {})}
+        #trained_models = {model: eval(model) for model in store_data.get('trained_models', {})}
         model = trained_models.get(model_name, None)
         if model is None:
             error_message = "Selected model is not available."
