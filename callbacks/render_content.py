@@ -1137,7 +1137,7 @@ def register_render_content_callbacks(app, trained_models):
         Output('categorical-graph', 'figure'),
         Input('categorical-dropdown', 'value'),
         State('stored-data', 'data'),
-        prevent_initial_call=True  # Prevents callback execution on startup
+        #prevent_initial_call=True  # Prevents callback execution on startup
     )
     def update_categorical_graph(selected_categorical, store_data):
         data_json = store_data.get('data', None)
