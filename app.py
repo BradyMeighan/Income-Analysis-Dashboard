@@ -4,6 +4,7 @@
 
 import pandas as pd
 import json
+import argparse
 from dash import Dash
 import dash_bootstrap_components as dbc
 from layout.layout import serve_layout
@@ -17,6 +18,9 @@ from utils.logging_config import logger
 
 # Import necessary Dash components for callbacks
 from dash.dependencies import Input, Output, State
+
+# Import pyngrok for ngrok integration
+from pyngrok import ngrok, conf
 
 # -----------------------------------------------------------------------------
 # Initialize Dash Application
@@ -95,6 +99,7 @@ def perform_fairness_analysis(store_data):
 
 store_data = perform_fairness_analysis(store_data)
 logger.critical("Income Analysis Dashboard is running on http://127.0.0.1:8050/.")
+
 # -----------------------------------------------------------------------------
 # Set the Layout with Store Data
 # -----------------------------------------------------------------------------
@@ -108,7 +113,31 @@ register_prediction_callbacks(app, trained_models)
 register_import_data_callbacks(app, trained_models)
 
 # -----------------------------------------------------------------------------
+# Define Function to Start ngrok if Token is Provided
+# -----------------------------------------------------------------------------
+def start_ngrok(token=None):
+    if token:
+        conf.get_default().auth_token = token
+        # You can specify the region if needed, e.g., "us", "eu", "au", "ap", "sa", "jp", "in"
+        # ngrok.set_default_region("us")
+        public_url = ngrok.connect(8050)
+        logger.critical(f"ngrok tunnel '{public_url}' created")
+        print(f"Public URL: {public_url}")
+    else:
+        logger.info("No ngrok token provided. Running locally.")
+
+# -----------------------------------------------------------------------------
+# Parse Command-Line Arguments
+# -----------------------------------------------------------------------------
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Income Analysis Dashboard")
+    parser.add_argument('--ngrok-token', type=str, help='Your ngrok authentication token')
+    return parser.parse_args()
+
+# -----------------------------------------------------------------------------
 # Run the Dash App
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
+    args = parse_arguments()
+    start_ngrok(args.ngrok_token)
     app.run_server(debug=True)
