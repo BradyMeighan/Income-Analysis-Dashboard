@@ -45,41 +45,21 @@ Access the dashboard at `http://localhost:8050`
 
 To make your dashboard accessible over the internet, you can use Ngrok. Follow these steps to set up and use Ngrok:
 
-1. **Download Ngrok**:
-   - Visit the [Ngrok download page](https://ngrok.com/download)
-   - Download the version appropriate for your operating system
-
-2. **Place ngrok.exe in the Project Folder**:
-   - Extract the downloaded file
-   - Move `ngrok.exe` to the root directory of your Income Analysis Dashboard project
-
-3. **Set Up Ngrok Authentication**:
+1. **Get Your Ngrok Auth Token**:
    - Sign up for a free Ngrok account at [https://dashboard.ngrok.com/signup](https://dashboard.ngrok.com/signup)
    - After signing in, go to the [Auth Token section](https://dashboard.ngrok.com/get-started/your-authtoken)
    - Copy your auth token
-   - Open a command prompt or terminal in your project directory and run:
-     ```bash
-     ngrok config add-authtoken YOUR_AUTH_TOKEN
-     ```
-   Replace `YOUR_AUTH_TOKEN` with the token you copied.
 
-4. **Start the Dash App**:
+2. **Launch with Public Access**:
    ```bash
-   python app.py
+   python main.py --ngrok-token YOUR_NGROK_AUTH_TOKEN
    ```
+   Replace `YOUR_NGROK_AUTH_TOKEN` with your actual Ngrok auth token.
 
-5. **Run Ngrok**:
-   - Open a new command prompt or terminal window
-   - Navigate to your project directory
-   - Run the following command:
-     ```bash
-     ngrok http 8050
-     ```
-   - Ngrok will display a forwarding URL (e.g., `https://abc123def456.ngrok.io`)
-
-6. **Access Your Dashboard**:
-   - Share the Ngrok URL with others to give them access to your dashboard
-   - The dashboard will be accessible as long as your local server and Ngrok are running
+3. **Access Your Dashboard**:
+   - After running the command, you'll see output with your public URL
+   - Share this URL with others to give them access to your dashboard
+   - The dashboard will remain accessible as long as your application is running
 
 ## 🎲 Fake Data Generation
 
