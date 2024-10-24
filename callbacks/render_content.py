@@ -20,8 +20,7 @@ def register_render_content_callbacks(app, trained_models):
     @app.callback(
         Output('tabs-content', 'children'),
         Input('tabs', 'active_tab'),
-        State('stored-data', 'data')
-    )
+        State('stored-data', 'data'),    )
     def render_content(tab, store_data):
         # Retrieve necessary variables from store_data
         numerical_columns = store_data.get('numerical_columns', [])
@@ -37,88 +36,147 @@ def register_render_content_callbacks(app, trained_models):
         metrics = store_data.get('metrics', {})
 
         if tab == 'findings-tab':
+            # Case Study Overview
+            case_study_overview = """
+            ## **Case Study Overview**
+
+            This study aims to assist policymakers in understanding the determinants of income levels based on 1994 census data. The primary goal is to develop a model that predicts whether an individual's annual income exceeds \$50,000, which corresponds to the top 10% of earners.
+
+            **Objectives:**
+            - **Understand Key Factors:** Identify and analyze the factors that significantly impact income levels.
+            - **Predictive Modeling:** Develop a robust model to predict income levels based on demographic and financial attributes.
+            - **Inform Policymakers:** Provide insights and recommendations to help formulate policies that promote equitable income distribution.
+
+            **Dataset:**
+            - **Source:** 1994 Census database extracted by Barry Becker.
+            - **Size:** 48,842 instances with 14 distinct attributes.
+            """
+
+            # Include top features from the correlation matrix
+            top_features_overview = """
+            ### **Key Factors Affecting Income Levels**
+
+            Our analysis identified several key factors that significantly influence income levels:
+
+            - **Capital Gain and Capital Loss:** These financial attributes have the highest correlation with income. Individuals with higher capital gains or losses are more likely to earn above \$50,000.
+            - **Education Level:** Higher education levels strongly correlate with higher income, emphasizing the importance of educational attainment.
+            - **Age:** Older individuals tend to have higher income levels, possibly due to accumulated experience.
+            - **Hours Per Week:** Those who work more hours per week are slightly more likely to earn above \$50,000, indicating a positive but less strong correlation.
+            """
+
             # Sprint 1 Content
             sprint1_goal = """
-        ### **Sprint 1 Goal**
+            ### **Sprint 1 Goal**
 
-        Our primary objective for **Sprint 1** was to lay the foundation for the Income Prediction System by focusing on data preprocessing and exploratory data analysis (EDA). We aimed to ensure data integrity, handle missing values, and perform initial visualizations to understand the dataset's structure and key characteristics.
-        """
+            Our primary objective for **Sprint 1** was to understand the problem domain and define the scope in line with the policymakers' needs. We focused on data collection, initial preprocessing, and understanding the determinants of income levels, especially the role of education.
+
+            **Alignment with Case Study:**
+            - Identified key factors affecting income levels as per the case study.
+            - Prepared the dataset for in-depth analysis, ensuring data integrity for reliable insights.
+            """
 
             sprint1_backlog = [
-                "- **Data Collection and Loading:** Successfully loaded the `adult.xlsx` dataset for analysis.",
-                "- **Data Cleaning:** Handled missing values, duplicates, and outliers to prepare the data for modeling.",
-                "- **Exploratory Data Analysis:** Performed initial visualizations and statistical summaries to understand data distributions.",
-                "- **Documentation and QA:** Established initial documentation and quality assurance processes.",
+                "- **Problem Definition:** Aligned the project objectives with policymakers' needs, emphasizing education's impact on income.",
+                "- **Data Collection and Loading:** Loaded the 1994 Census dataset for analysis.",
+                "- **Initial Data Exploration:** Explored data distributions and identified key features related to income.",
+                "- **Ethical Considerations:** Discussed potential biases and ethical implications of using demographic data.",
             ]
 
             # Sprint 2 Content
             sprint2_goal = """
-        ### **Sprint 2 Goal**
+            ### **Sprint 2 Goal**
 
-        In **Sprint 2**, our goal was to develop and evaluate machine learning models for our Income Prediction System. We aimed to create a baseline logistic regression model, compare it with other model types, and perform initial fairness checks across demographic groups. This set the stage for fine-tuning and user interface development in the next sprint.
-        """
+            In **Sprint 2**, our goal was to perform extensive Exploratory Data Analysis (EDA) to uncover patterns and correlations, particularly focusing on how education level and other top features influence income. We aimed to provide visualizations and statistical evidence to support our findings.
+
+            **Alignment with Case Study:**
+            - Utilized data visualization to understand income distribution concerning education, capital gain/loss, age, and hours per week.
+            - Explored correlations to validate the impact of these features on income levels.
+            """
 
             sprint2_backlog = [
-                "- **Baseline Model Development:** Trained a logistic regression model as a baseline for income prediction.",
-                "- **Model Comparison:** Implemented and compared multiple models (logistic regression, decision tree, random forest, XGBoost) to find the best-performing model.",
-                "- **Fairness Analysis:** Conducted initial fairness checks across different demographic groups to identify and address potential biases in the model predictions.",
+                "- **Data Visualization:** Created histograms, box plots, and correlation matrices for key features.",
+                "- **Correlation Analysis:** Calculated correlation coefficients between features and income.",
+                "- **Feature Engineering:** Developed new features to capture nuanced relationships.",
+                "- **Stakeholder Engagement:** Prepared reports to communicate findings to policymakers.",
             ]
 
             # Sprint 3 Content
             sprint3_goal = """
-        ### **Sprint 3 Goal**
+            ### **Sprint 3 Goal**
 
-        The focus of **Sprint 3** was to enhance the user interface and experience of the Income Prediction System. We aimed to integrate the models into a user-friendly dashboard, allowing users to input data, view predictions, and analyze results through interactive visualizations.
-        """
+            The focus of **Sprint 3** was on model building, evaluation, and bias mitigation. We developed classification models to predict income levels, implemented hyperparameter tuning to improve performance, and addressed overfitting issues.
+
+            **Alignment with Case Study:**
+            - Built predictive models to determine whether an individual earns more than \$50,000.
+            - Fine-tuned models using advanced techniques to enhance accuracy and fairness.
+            - Evaluated models for bias, ensuring equitable predictions across demographic groups.
+            """
 
             sprint3_backlog = [
-                "- **Dashboard Development:** Built an interactive dashboard using Dash and Plotly.",
-                "- **Model Integration:** Integrated the trained models into the dashboard for real-time predictions.",
-                "- **User Input Forms:** Developed forms for users to input data and receive income predictions.",
-                "- **Interactive Visualizations:** Added charts and graphs to visualize data distributions and model results.",
-                "- **Export Functionality:** Enabled users to export prediction results for further analysis.",
+                "- **Model Development:** Trained logistic regression, decision trees, random forests, and XGBoost models.",
+                "- **Hyperparameter Tuning:** Utilized `RandomizedSearchCV` and `GridSearchCV` to optimize model parameters.",
+                "- **Overfitting Mitigation:** Implemented techniques like cross-validation and regularization.",
+                "- **Fairness Enhancement:** Adjusted models to reduce bias, leading to converged fairness metrics.",
+                "- **Model Deployment:** Ensured compatibility between data and model inputs for accurate predictions.",
             ]
 
             # Overall Findings and Conclusions
             overall_findings = """
-        ## **Overall Findings and Conclusions**
+            ## **Overall Findings and Conclusions**
 
-        Throughout **Sprints 1 to 3**, the Income Prediction System evolved from data preprocessing to a fully functional interactive dashboard. Key accomplishments and insights include:
+            Our analysis identified several key factors that significantly influence income levels:
 
-        - **Data Preprocessing:** Ensured data quality by handling missing values, duplicates, and outliers. This foundational work was critical for building reliable models.
-        - **Model Performance:** The XGBoost model consistently outperformed others in terms of accuracy and F1-score, indicating its effectiveness for this classification task.
-        - **Fairness Considerations:** Fairness analysis revealed that while the XGBoost model performed best overall, the Random Forest model demonstrated more consistent performance across different demographic groups. This highlights the trade-off between model accuracy and fairness.
-        - **User Interface Development:** The dashboard provides an accessible platform for users to interact with the models, input data, and visualize results, enhancing the system's usability.
-        - **Challenges Overcome:** Addressed challenges related to data imbalance, model bias, and integrating complex models into a web application.
-        """
+            - **Capital Gain and Capital Loss:** These financial attributes have the highest correlation with income.
+            - **Education Level:** Higher education levels strongly correlate with higher income.
+            - **Age:** Older individuals tend to have higher income levels.
+            - **Hours Per Week:** Those who work more hours per week are slightly more likely to earn above \$50,000.
+
+            **Implications for Policymakers:**
+
+            - **Education Investment:** Promoting higher education can be an effective strategy to increase income levels among citizens.
+            - **Financial Literacy Programs:** Encouraging financial investments may impact capital gains/losses, affecting income.
+            - **Support for Older Workforce:** Implementing policies that leverage the experience of older workers could be beneficial.
+            """
 
             # Retrospective and Next Steps
             retrospective = """
-        ## **Retrospective and Next Steps**
+            ## **Retrospective and Next Steps**
 
-        - **Strengths:**
-          - Effective collaboration and communication among team members.
-          - Successful implementation of machine learning models with robust performance.
-          - Development of an intuitive user interface that meets user needs.
+            - **Strengths:**
+              - Comprehensive analysis aligning with the case study objectives.
+              - Successfully mitigated bias across models, enhancing fairness.
+              - Improved model performance through hyperparameter tuning.
 
-        - **Areas for Improvement:**
-          - Enhance model fairness without significantly compromising accuracy.
-          - Implement more advanced techniques for bias mitigation.
-          - Conduct user testing to gather feedback for further UI/UX improvements.
+            - **Areas for Improvement:**
+              - Update the dataset to reflect current economic conditions for more relevant insights.
+              - Further explore advanced models and techniques to boost performance.
 
-        - **Future Work:**
-          - Explore additional models and techniques to improve both performance and fairness.
-          - Incorporate more features or external data sources to enrich the model.
-          - Implement continuous integration and deployment for streamlined updates and maintenance.
-        """
+            - **Future Work:**
+              - Incorporate additional variables that may affect income levels.
+              - Engage with policymakers to tailor recommendations.
+              - Implement continuous monitoring to maintain fairness and accuracy.
+            """
 
             # Assemble the content into the layout
             return dbc.Container([
+                # Case Study Overview Section
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardHeader(html.H4("Case Study Overview")),
+                            dbc.CardBody([
+                                dcc.Markdown(case_study_overview, style={'font-size': '18px'}),
+                                dcc.Markdown(top_features_overview, style={'font-size': '18px'}),
+                            ])
+                        ], className="mb-4")
+                    ], width=12)
+                ]),
+
                 # Sprint 1 Section
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
-                            dbc.CardHeader(html.H4("Sprint 1: Data Preprocessing & EDA")),
+                            dbc.CardHeader(html.H4("Sprint 1: Understanding the Problem and Data Preparation")),
                             dbc.CardBody([
                                 dcc.Markdown(sprint1_goal, style={'font-size': '18px'}),
                                 dcc.Markdown('\n'.join(sprint1_backlog), style={'font-size': '18px'}),
@@ -131,7 +189,7 @@ def register_render_content_callbacks(app, trained_models):
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
-                            dbc.CardHeader(html.H4("Sprint 2: Model Development & Fairness Analysis")),
+                            dbc.CardHeader(html.H4("Sprint 2: Exploratory Data Analysis")),
                             dbc.CardBody([
                                 dcc.Markdown(sprint2_goal, style={'font-size': '18px'}),
                                 dcc.Markdown('\n'.join(sprint2_backlog), style={'font-size': '18px'}),
@@ -144,7 +202,7 @@ def register_render_content_callbacks(app, trained_models):
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
-                            dbc.CardHeader(html.H4("Sprint 3: Dashboard Implementation & User Experience")),
+                            dbc.CardHeader(html.H4("Sprint 3: Modeling, Evaluation, and Bias Mitigation")),
                             dbc.CardBody([
                                 dcc.Markdown(sprint3_goal, style={'font-size': '18px'}),
                                 dcc.Markdown('\n'.join(sprint3_backlog), style={'font-size': '18px'}),
@@ -175,19 +233,9 @@ def register_render_content_callbacks(app, trained_models):
                             ])
                         ], className="mb-4")
                     ], width=12)
-                ]),
-
-                # Retrospective Image (Optional)
-                dbc.Row([
-                    dbc.Col([
-                        dbc.Card([
-                            dbc.CardBody([
-                                html.Img(src="/assets/retrospective.png", style={'width': '100%', 'margin-top': '20px'}),
-                            ])
-                        ], className="mb-4")
-                    ], width=12)
                 ])
             ], fluid=True)
+
 
         elif tab == 'preprocessing-tab':
             # Retrieve preprocessing metrics
@@ -455,6 +503,21 @@ def register_render_content_callbacks(app, trained_models):
     **Key Insights:**
     - Features with high absolute correlation values are potential predictors for income levels.
     - Understanding these relationships helps in feature selection and building predictive models.
+    
+    **Interpretation:**
+
+    The correlation matrix highlights the relationships between the top features and income:
+
+    - **Capital Gain:** Strong positive correlation with income.
+    - **Capital Loss:** Moderate positive correlation with income.
+    - **Education Number:** Positive correlation, indicating higher education levels relate to higher income.
+    - **Age:** Positive correlation with income.
+    - **Hours Per Week:** Moderate positive correlation.
+
+    **Relevance to Case Study:**
+
+    These features are significant predictors of income and are essential for our predictive modeling, directly addressing the case study objectives.
+
                                     """)
                                 ], style={'padding': '20px'})
                             ])
@@ -541,7 +604,7 @@ def register_render_content_callbacks(app, trained_models):
                                 dcc.Markdown("""
     ### **Machine Learning Models**
     
-    In Sprint 2, we developed and evaluated multiple machine learning models to predict income levels. The models trained include:
+    In alignment with the case study objectives, we developed several classification models to predict whether an individual earns more than \$50,000 annually. The models include:
     
     - **Logistic Regression:** A baseline model for binary classification.
     - **Decision Tree Classifier:** Captures non-linear relationships.
@@ -559,6 +622,24 @@ def register_render_content_callbacks(app, trained_models):
     **Interpretation:**
     
     The bar chart above compares the performance of different models based on key metrics such as **Accuracy**, **Precision**, **Recall**, and **F1-Score**. This comparison aids in selecting the most effective model for income prediction.
+                            
+
+    **Hyperparameter Tuning:**
+
+    - Utilized **RandomizedSearchCV** and **GridSearchCV** to find the optimal parameters for each model.
+    - Improved model performance and generalized ability to new data.
+    - Mitigated overfitting by selecting parameters that balance bias and variance.
+
+    **Relevance to Case Study:**
+
+    - Enhanced model accuracy and fairness directly support the goal of providing reliable predictions for policymakers.
+    - Understanding model performance metrics ensures informed decision-making.
+
+    **Feature Importance Analysis:**
+
+    - Identified key predictors of income, reinforcing findings from EDA.
+    - Ensured that models focus on significant features aligned with the case study objectives.
+                            
                             """, style={'font-size': '18px'})
                             ])
                         ], className="mb-4")
@@ -633,6 +714,30 @@ def register_render_content_callbacks(app, trained_models):
     - Its Equal Opportunity Difference is very close to zero for most groups.
     
     This suggests the Random Forest model is the most fair and consistent across different demographic groups, making it likely the best option for reducing bias in decision-making.
+
+    **Post-Fine-Tuning Observations:**
+
+    After fine-tuning the models and applying bias mitigation techniques, we observed that the fairness metrics across all models have converged, indicating more equitable performance across different demographic groups.
+
+    **Key Points:**
+
+    - **Consistent True Positive Rates:** The variation in True Positive Rates across groups has reduced significantly.
+    - **Equal Opportunity Difference Near Zero:** Indicates minimal disparity in model performance between groups.
+
+    **Implications for Policymakers:**
+
+    - The models provide fair predictions, ensuring that policy decisions based on these models do not inadvertently favor or disadvantage any particular group.
+    - Enhances the trustworthiness of the model outputs for informing equitable policies.
+
+    **Relevance to Case Study:**
+
+    - Aligns with ethical considerations, ensuring the predictive model supports the case study's goal of understanding income determinants without bias.
+
+    **Conclusion:**
+
+    The fine-tuning process successfully mitigated biases, resulting in models that are both accurate and fair, supporting informed and equitable policymaking.
+
+    
                         """, style={'font-size': '18px'})
                             ])
                         ], className="mb-4")
@@ -701,6 +806,40 @@ def register_render_content_callbacks(app, trained_models):
                 "- **Performance Bottleneck:**",
                 "  - **Scenario:** The data loading process was significantly slow due to inefficient file reading methods.",
                 "  - **Resolution:** Optimized the data loading by specifying data types and utilizing more efficient pandas functions, reducing load time by 30%."
+                "",
+                "- **Implementing Model Predictions:**",
+                "  - **Challenge:** Integrating models into the application and ensuring they produce accurate predictions with new data inputs.",
+                "  - **Solution:**",
+                "    - Developed robust data pipelines to preprocess new data consistently with the training data.",
+                "    - Validated model outputs against known benchmarks.",
+                "",
+                "- **Data Compatibility:**",
+                "  - **Challenge:** Ensuring that new data inputs match the format and structure expected by the models.",
+                "  - **Solution:**",
+                "    - Implemented data validation checks to verify data types, ranges, and categories.",
+                "    - Provided user guidance and error messages for incorrect data inputs.",
+                "",
+                "- **Hyperparameter Tuning:**",
+                "  - **Challenge:** Finding the optimal hyperparameters to improve model performance without overfitting.",
+                "  - **Solution:**",
+                "    - Utilized **RandomizedSearchCV** for initial broad searches across hyperparameter space.",
+                "    - Applied **GridSearchCV** for fine-tuning around the best parameters identified.",
+                "    - Employed cross-validation to assess model generalizability.",
+                "",
+                "- **Combating Overfitting:**",
+                "  - **Challenge:** Models performing well on training data but poorly on unseen data.",
+                "  - **Solution:**",
+                "    - Implemented regularization techniques (e.g., L1 and L2 penalties).",
+                "    - Pruned decision trees to prevent them from becoming too complex.",
+                "    - Used ensemble methods like Random Forests to reduce variance.",
+                "",
+                "- **Bias Mitigation:**",
+                "  - **Challenge:** Reducing model bias to ensure fair predictions across demographic groups.",
+                "  - **Solution:**",
+                "    - Adjusted class weights to handle class imbalance.",
+                "    - Applied re-sampling techniques to balance the dataset.",
+                "    - Used fairness-aware algorithms and constraints during model training.",
+
             ]
     
             return dbc.Container([
@@ -997,7 +1136,8 @@ def register_render_content_callbacks(app, trained_models):
     @app.callback(
         Output('categorical-graph', 'figure'),
         Input('categorical-dropdown', 'value'),
-        State('stored-data', 'data')
+        State('stored-data', 'data'),
+        prevent_initial_call=True  # Prevents callback execution on startup
     )
     def update_categorical_graph(selected_categorical, store_data):
         data_json = store_data.get('data', None)
