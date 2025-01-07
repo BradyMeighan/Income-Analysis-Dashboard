@@ -52,7 +52,7 @@ To make your dashboard accessible over the internet, you can use Ngrok. Follow t
 
 2. **Launch with Public Access**:
    ```bash
-   python main.py --ngrok-token YOUR_NGROK_AUTH_TOKEN
+   python app.py --ngrok-token YOUR_NGROK_AUTH_TOKEN
    ```
    Replace `YOUR_NGROK_AUTH_TOKEN` with your actual Ngrok auth token.
 
